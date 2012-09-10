@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" manifest="offline.php" >
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+
+<script type="text/javascript" src="./js/jquery.js"></script>
+
+<script type="text/javascript">
+
+	var webkit_short = "-webkit-border-radius";
+	var webkit_tl = "-webkit-border-top-left-radius";
+	var webkit_tr = "-webkit-border-top-right-radius";
+	var webkit_bl = "-webkit-border-bottom-left-radius";
+	var webkit_br = "-webkit-border-bottom-right-radius";
+	
+	var moz_short = "-moz-border-radius";
+	var moz_tl = "-moz-border-radius-topleft";
+	var moz_tr = "-moz-border-radius-topright";
+	var moz_bl = "-moz-border-radius-bottomleft";
+	var moz_br = "-moz-border-radius-bottomright";
+
+	var norm_short = "border-radius";
+	var norm_tl = "border-top-left-radius";
+	var norm_tr = "border-top-right-radius";
+	var norm_bl = "border-bottom-left-radius";
+	var norm_br = "border-bottom-right-radius";
+
+	
+	$(document).ready(function() {
+		$('.border-radius').val('');
+		
+		$('.border-radius').keyup(function() {
+			
+			
+			$(this).attr('data-edit', 1);
+			$(this).attr('sibling', $(this).attr('id'));
+			
+			if( $('#top-left-border').attr('sibling') == '' ) {
+				 $('#top-left-border').attr('sibling',$(this).attr('id'))
+			}
+			if( $('#top-right-border').attr('sibling') == '' ) {
+				$('#top-right-border').attr('sibling',$(this).attr('id'))
+			}
+			if( $('#bottom-left-border').attr('sibling') == '' ) {
+				$('#bottom-left-border').attr('sibling',$(this).attr('id'))
+			}
+			if( $('#bottom-right-border').attr('sibling') == '' ) {
+				$('#bottom-right-border').attr('sibling',$(this).attr('id'))
+			}
+			
+			var radius = parseInt($(this).val());
+			
+			console.log(radius);
+			
+			if( isNaN(radius) ) {
+				radius = 0;	
+			}
+			if(radius > -1 ) {
+			
+				if( $('#top-left-border').val() == '' || ( $('#top-left-border').attr('data-edit') == 0 && $('#top-left-border').attr('sibling')==$(this).attr('id') ) ) {
+					$('#top-left-border').val(radius);
+				}
+				if( $('#top-right-border').val() == '' || ( $('#top-right-border').attr('data-edit') == 0 && $('#top-right-border').attr('sibling')==$(this).attr('id') ) ) {
+					$('#top-right-border').val(radius);
+				}
+				if( $('#bottom-left-border').val() == '' || ( $('#bottom-left-border').attr('data-edit') == 0 && $('#bottom-left-border').attr('sibling')==$(this).attr('id') ) ) {
+					$('#bottom-left-border').val(radius);
+				}
+				if( $('#bottom-right-border').val() == '' || ( $('#bottom-right-border').attr('data-edit') == 0 && $('#bottom-right-border').attr('sibling')==$(this).attr('id') ) ) {
+					$('#bottom-right-border').val(radius);
+				}
+				
+				var topleftRadius = parseInt($('#top-left-border').val());
+				var toprightRadius = parseInt($('#top-right-border').val());
+				var bottomleftRadius = parseInt($('#bottom-left-border').val());
+				var bottomrightRadius = parseInt($('#bottom-right-border').val());
+				
+				var listRadius = [topleftRadius, toprightRadius, bottomleftRadius, bottomrightRadius ];
+				
+				console.log(listRadius);
+				// generate the code
+				var code = "";
+				
+				var uniqueNum = $.unique(listRadius).length;
+				
+				var uniqueList = $.unique(listRadius);
+				
+				if( uniqueNum == 1 ) {
+					// all are the same
+					code += webkit_short + ": " + radius+"px;\n";
+					code += moz_short + ": " + radius+"px;\n";
+					code += norm_short + ": " + radius+"px;\n";
+				} else if (uniqueNum == 2 || uniqueNum == 3 ) {
+					listRadius = [topleftRadius, toprightRadius, bottomleftRadius, bottomrightRadius ];
+					var freq = mostFrequent(listRadius);
+					
+					console.log(freq);
+					
+					code += webkit_short + ": " + freq+"px;\n";
+					code += moz_short + ": " + freq+"px;\n";
+					code += norm_short + ": " + freq+"px;\n";
+					
+					if(topleftRadius != freq) {
+						code += webkit_tl + ": "+ topleftRadius + "px;\n";
+						code += moz_tl + ": "+ topleftRadius + "px;\n";
+						code += norm_tl + ": "+ topleftRadius + "px;\n";
+					}
+					if(toprightRadius != freq) {
+						code += webkit_tr + ": "+ toprightRadius + "px;\n";
+						code += moz_tr + ": "+ toprightRadius + "px;\n";
+						code += norm_tr + ": "+ toprightRadius + "px;\n";
+					}
+					if(bottomleftRadius != freq) {
+						code += webkit_bl + ": "+ bottomleftRadius + "px;\n";
+						code += moz_bl + ": "+ bottomleftRadius + "px;\n";
+						code += norm_bl + ": "+ bottomleftRadius + "px;\n";
+					}
+					if(bottomrightRadius != freq) {
+						code += webkit_br + ": "+ bottomrightRadius + "px;\n";
+						code += moz_br + ": "+ bottomrightRadius + "px;\n";
+						code += norm_br + ": "+ bottomrightRadius + "px;\n";
+					}
+					
+					
+				} else if ( uniqueNum==4) {
+					code += webkit_tl + ": "+ topleftRadius + "px;\n";
+					code += moz_tl + ": "+ topleftRadius + "px;\n";
+					code += norm_tl + ": "+ topleftRadius + "px;\n";
+					code += webkit_tr + ": "+ toprightRadius + "px;\n";
+					code += moz_tr + ": "+ toprightRadius + "px;\n";
+					code += norm_tr + ": "+ toprightRadius + "px;\n";
+					code += webkit_bl + ": "+ bottomleftRadius + "px;\n";
+					code += moz_bl + ": "+ bottomleftRadius + "px;\n";
+					code += norm_bl + ": "+ bottomleftRadius + "px;\n";
+					code += webkit_br + ": "+ bottomrightRadius + "px;\n";
+					code += moz_br + ": "+ bottomrightRadius + "px;\n";
+					code += norm_br + ": "+ bottomrightRadius + "px;\n";
+				}
+	
+				console.log(webkit_tl +" : "+topleftRadius +"px");
+				
+				
+				$('#border-radius-box').css({
+					WebkitBorderTopLeftRadius : topleftRadius +"px",
+					MozBorderRadiusTopleft : topleftRadius +"px",
+					borderTopLeftRadius : topleftRadius +"px",
+					WebkitBorderTopRightRadius : toprightRadius +"px",
+					MozBorderRadiusTopright : toprightRadius +"px",
+					borderTopRightRadius : toprightRadius +"px",
+					WebkitBorderBottomLeftRadius : bottomleftRadius +"px",
+					MozBorderRadiusBottomleft : bottomleftRadius +"px",
+					borderBottomLeftRadius : bottomleftRadius +"px",
+					WebkitBorderBottomRightRadius : bottomrightRadius +"px",
+					MozBorderRadiusBottomright : bottomrightRadius +"px",
+					borderBottomRightRadius : bottomrightRadius +"px",
+				});
+				
+				
+				console.log(
+						{
+					webkit_tl : topleftRadius +"px",
+					moz_tl : topleftRadius +"px",
+					norm_tl : topleftRadius +"px",
+					webkit_tr : toprightRadius +"px",
+					moz_tr : toprightRadius +"px",
+					norm_tr : toprightRadius +"px",
+					webkit_bl : bottomleftRadius +"px",
+					moz_bl : bottomleftRadius +"px",
+					norm_bl : bottomleftRadius +"px",
+					webkit_br : bottomrightRadius +"px",
+					moz_br : bottomrightRadius +"px",
+					norm_br : bottomrightRadius +"px",
+				}	
+							);
+				
+				$('#code').html(code);
+				
+			}
+			
+		});
+				
+				
+		function mostFrequent(arr) {
+			var uniqs = {};
+		
+			for(var i = 0; i < arr.length; i++) {
+				uniqs[arr[i]] = (uniqs[arr[i]] || 0) + 1;
+			}
+			console.log(uniqs);
+			var max = { val: arr[0], num: 1 };
+			
+			for(var u in uniqs) {
+				if(max.num < uniqs[u]) { max = { val: u, num: uniqs[u] }; }
+			}
+		
+			return max.val;
+		}
+
+		
+	});
+</script>
+
+<style type="text/css">
+
+	body {
+		text-align:center;	
+	}
+
+	div#container {
+		width:960px;	
+		margin:0 auto;
+		margin-top:30px;
+	}
+
+	div#border-radius-box {
+		width:500px;
+		height:300px;
+		background-color:#000;
+		margin:25px;
+	}
+	
+	.border-radius {
+		width:20px;	
+		text-align:center;
+	}
+	
+	#top-left-border , #bottom-left-border {
+		float:left;
+		margin-top:0px;
+		margin-left:-5px;
+	}
+	
+	#top-right-border , #bottom-right-border {
+		float:right;
+		margin-top:0px;
+		margin-right:-5px;
+	}
+	
+	#bottom-right-border ,#bottom-left-border  {
+		margin-top:-20px;	
+	}
+	
+	textarea#code {
+		width:350px;
+		height:300px;
+		font-size:14px;
+		float:right;
+		margin-top:25px;
+		
+	}
+	
+	div#border-radius-container {
+		float:left;
+		width:550px;
+	}
+	
+	.clear {
+		clear:both;	
+	}
+	
+</style>
+
+
+</head>
+
+<body>
+
+	<div id="container">
+    	<div id="border-radius-container">
+    	<input type="text" id="top-left-border" title="top-left" class="border-radius" data-edit="0" sibling=""  />
+        <input type="text" id="top-right-border" title="top-right" class="border-radius"  data-edit="0" sibling="" />
+        
+        
+        <div id="border-radius-box">
+      
+        </div>
+    
+    
+        <input type="text" id="bottom-left-border" title="bottom-left" class="border-radius"  data-edit="0" sibling="" />
+        <input type="text" id="bottom-right-border" title="bottom-right" class="border-radius"  data-edit="0" sibling="" />
+    	</div>
+        
+        <textarea   readonly="readonly" id="code"></textarea>
+        
+        <div style="clear:both"></div>
+    </div>
+
+
+</body>
+</html>
